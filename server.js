@@ -3,6 +3,7 @@ const http = require("http");
 const socketIo = require("socket.io");
 const bodyParser = require("body-parser");
 const cors = require("cors");
+const path = require("path");
 
 const app = express();
 const server = http.createServer(app);
@@ -15,19 +16,19 @@ const io = socketIo(server, {
 
 app.use(cors());
 app.use(bodyParser.json());
-app.use(express.static("public"));
 
+// Serve static files correctly
+app.use(express.static(path.join(__dirname, "public")));
+
+// Ensure index.html is served
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+});
 
 // Handle TTN webhook
 app.post("/ttn-webhook", (req, res) => {
   console.log("Received data:", req.body);
-  
-  // Extract sensor data
-  const sensorData = req.body; 
-
-  // Broadcast to connected clients
-  io.emit("sensor-data", sensorData);
-
+  io.emit("sensor-data", req.body);
   res.status(200).send("Data received");
 });
 
@@ -41,12 +42,4 @@ io.on("connection", (socket) => {
 
 // Start server
 const PORT = process.env.PORT || 4000;
-server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-
-
-setInterval(() => console.log("App is running..."), 30000); // Keeps the app alive
-
-app.get("/", (req, res) => {
-  res.sendFile(__dirname + "/public/index.html");
-});
-
+server.listen(PORT, () => console.log(`Server running on port
