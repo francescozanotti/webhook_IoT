@@ -42,3 +42,6 @@ io.on("connection", (socket) => {
 // Start server
 const PORT = process.env.PORT || 4000;
 server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+
+setInterval(() => console.log("App is running..."), 30000); // Keeps the app alive
