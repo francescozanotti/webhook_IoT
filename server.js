@@ -45,3 +45,7 @@ server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
 
 setInterval(() => console.log("App is running..."), 30000); // Keeps the app alive
+
+app.get("/", (req, res) => {
+  res.send("Railway app is running!");
+});
